@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="184.0" prefWidth="497.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ClosingWork">
+   <children>
+      <VBox layoutX="101.0" layoutY="-8.0" prefHeight="192.0" prefWidth="497.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label text="Do Not turn OFF or Cancel this task while loading..." textFill="#f80808">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="LBmsg" layoutX="30.0" layoutY="30.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="20.0" text="msg....">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <ProgressBar fx:id="progressBar" maxWidth="1.7976931348623157E308" prefWidth="200.0" progress="0.0" VBox.vgrow="ALWAYS" />
+            <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+               <children>
+                  <Button fx:id="BTstartTransfer" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#startTransferAction" text="START TRANSFER" />
+                  <Label maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="BTcancel" mnemonicParsing="false" onAction="#cancelAction" text="CANCEL" />
+                  <Button fx:id="BTdone" layoutX="147.0" layoutY="10.0" mnemonicParsing="false" onAction="#doneAction" text="DONE" />
+               </children>
+            </HBox>
+         </children>
+         <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </padding>
+      </VBox>
+   </children>
+</AnchorPane>

@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import sample.Custom;
 
 import javax.swing.*;
 import java.io.*;
@@ -49,17 +50,7 @@ public class MobileDataUpload implements Initializable{
 
     /////***** GET DATABASES NAMES
     private void getAllDatabaseName()throws Exception{
-        java.sql.Connection conInit = DriverManager.getConnection(Home.rootConnectionPath, Home.userName, Home.password);
-        PreparedStatement stmt = conInit.prepareStatement("SHOW DATABASES");
-        ResultSet set = stmt.executeQuery();
-        //////***** CREATE DATABASES NAME ARRAY
-        ArrayList<String> databasesList = new ArrayList<>();
-        while(set.next()) databasesList.add(set.getString(1));
-        CBselectFile.setItems(FXCollections.observableArrayList(databasesList));
-
-        if(set != null) set.close();
-        if(stmt != null) stmt.close();
-        if(conInit != null) conInit.close();
+        CBselectFile.setItems(FXCollections.observableArrayList(Custom.getAllDatabaseName()));
     }
 
     /////***** CREATE FILE

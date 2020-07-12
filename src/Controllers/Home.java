@@ -14,6 +14,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import sample.Custom;
 import sample.DatabaseImpt;
 import sample.Main;
 
@@ -64,17 +65,7 @@ public class Home implements Initializable {
     }
 
     private void getAllDatabaseName()throws Exception{
-        java.sql.Connection conInit = DriverManager.getConnection(rootConnectionPath, userName, password);
-        PreparedStatement stmt = conInit.prepareStatement("SHOW DATABASES");
-        ResultSet set = stmt.executeQuery();
-        //////***** CREATE DATABASES NAME ARRAY
-        ArrayList<String> databasesList = new ArrayList<>();
-        while(set.next()) databasesList.add(set.getString(1));
-        CBselectFile.setItems(FXCollections.observableArrayList(databasesList));
-
-        if(set != null) set.close();
-        if(stmt != null) stmt.close();
-        if(conInit != null) conInit.close();
+        CBselectFile.setItems(FXCollections.observableArrayList(Custom.getAllDatabaseName()));
     }
 
 
@@ -134,12 +125,13 @@ public class Home implements Initializable {
         };
         //////***** STRAT THRAED
         new Thread(runnable).start();
+
     }
 
 
     private void DatabaseConnection()throws Exception{
         /////////////////************************* ESTABLISHED DATABASE CONNECTION
-        con = DriverManager.getConnection("jdbc:mysql://"+ databaseIP +":3306/"+databaseName, "root", "");
+        con = DriverManager.getConnection(rootConnectionPath+databaseName, userName, password);
         System.out.println("Database Connected");
         TAstatus.appendText("\nDatabase Connected...");
     }
@@ -233,6 +225,22 @@ public class Home implements Initializable {
             Parent root = FXMLLoader.load(getClass().getResource("/FXML/selectCreateDatabases.fxml"));
             Stage stage = new Stage();
             stage.setTitle("Select & Create File");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+        }catch (Exception ee){
+            JOptionPane.showMessageDialog(null, "Somethimg Wrong!"+ee.getMessage());
+            TAstatus.appendText("\n"+ee.getMessage());
+        }
+    }
+
+    ///////****** EXPORT JASON DATA
+    @FXML private void exportJSONData(){
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/FXML/exportJSONData.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("Export JSON Data");
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(new Scene(root));
             stage.showAndWait();

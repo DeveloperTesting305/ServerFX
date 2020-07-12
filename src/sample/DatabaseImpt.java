@@ -125,6 +125,7 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
 
     /***
      *
+     *      * USER
      *      * GODOWN
      *      * CITY
      *      * UNIT
@@ -172,6 +173,31 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
     }
     /////////////////********************* GET USERS GENERAL METHOD
 
+    /////////////////********************* GET USERS BEAN GENERAL METHOD
+    private UsersBean getUsersBean_GeneralMethod(PreparedStatement stmt) throws  SQLException, RemoteException{
+        ResultSet set = null;
+        UsersBean beans = null;
+
+        try{
+            set = stmt.executeQuery();
+            if(set != null){
+                beans = new UsersBean();
+                if(set.next()){
+                    beans.setUserId(set.getInt("user_id"));
+                    beans.setUserName(set.getString("user_name"));
+                    beans.setPassword(set.getString("password"));
+                    beans.setPrivilege(set.getString("privilege"));
+                }
+            }
+            return beans;
+        }
+        finally{
+            if(set != null) set.close();
+            if(stmt != null) stmt.close();
+        }
+    }
+    /////////////////********************* GET USERS BEAN GENERAL METHOD
+
     ////////////////********************* INSERT
     public int insertUsers(UsersBean bean)throws SQLException, RemoteException{
         String query = "insert into users(user_name, password, privilege) values(?, ?, ?)";
@@ -213,7 +239,6 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
     }
     ////////////////********************* UPDATE
 
-
     ////////////////********************* DELETE
     public int deleteUsers(Integer userId)throws SQLException, RemoteException{
         String query = "delete from users where user_id = ?";
@@ -232,7 +257,6 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
     }
     ////////////////********************* DELETE
 
-
     ////////////////********************* GET ALL
     public ArrayList getUsers()throws SQLException, RemoteException{
         String query = "select * from users";
@@ -243,9 +267,41 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
     }
     ////////////////********************* GET ALL
 
+    ////////////////********************* BEAN
+    ////////////////********************* GET BEAN BY ID
+    public UsersBean getUsersBean(int userId)throws SQLException, RemoteException{
+        String query = "select * from users where user_id = ?";
+        System.out.println(query);
+        PreparedStatement stmt = null;
+        stmt = Home.con.prepareStatement(query);
+        stmt.setInt(1, userId);
+        return getUsersBean_GeneralMethod(stmt);
+    }
+    ////////////////********************* GET BEAN BY ID
+
 
 
     ////////////////********************* SINGLE VALUE
+    ////////////////********************* GET USER NAME BY ID
+    public String getUserNameById(Integer userId)throws SQLException, RemoteException{
+        String query = "select user_name from users where user_id = ?";
+        System.out.println(query);
+        PreparedStatement stmt = null;
+        ResultSet set = null;
+        String name = "";
+        try {
+            stmt = Home.con.prepareStatement(query);
+            stmt.setInt(1, userId);
+            set = stmt.executeQuery();
+            if (set.next()) name = set.getString("user_name");
+            return name;
+        }finally {
+            if(stmt != null) stmt.close();
+            if(set != null) set.close();
+        }
+    }
+    ////////////////********************* GET USER NAME BY ID
+
     ////////////////********************* GET USER ID
     public int getUserId(String userName, String password)throws SQLException, RemoteException{
         String query = "select user_id from users where user_name = BINARY ? and password = BINARY ?";
@@ -279,6 +335,19 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
         return false;
     }
     ////////////////********************* IS USER VALID
+
+    ////////////////********************* IS ADMIN USER
+    public boolean isAdminUser(Integer userId)throws SQLException, RemoteException{
+        String query = "select * from users where user_id =  ? and privilege = ?";
+        System.out.println(query);
+        PreparedStatement stmt = null;
+        stmt = Home.con.prepareStatement(query);
+        stmt.setInt(1, userId);
+        stmt.setString(2, Values.User.privilgeAdmin);
+        if(stmt.executeQuery().next()) return true;
+        return false;
+    }
+    ////////////////********************* IS ADMIN USER
 
     /////////////////********************* USERS TABLE ********************************//////////////////
 
@@ -1852,7 +1921,6 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
                 "AND products.`prod_cat_id` = "+prodCatId;
 
         System.out.println(query);
-//        PreparedStatement stmt = Home.con.prepareStatement(query);
         return getProducts_GeneralMethod(query);
     }
     ////////////////********************* GET PRODUCT IN GODOWN WITH CATEGORY
@@ -1876,9 +1944,6 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
 
 
         System.out.println(query);
-//        PreparedStatement stmt = Home.con.prepareStatement(query);
-//        stmt.setInt(1, godownId);
-//        stmt.setInt(2, prodCatId);
         return getProducts_GeneralMethod(query);
     }
     ////////////////********************* GET PRODUCT NOT IN GODOWN WITH CATEGORY
@@ -2323,6 +2388,7 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
                     bean.setTransectionId(set.getInt("transection_id"));
                     bean.setTransDate(set.getTimestamp("trans_date"));
                     bean.setCustomerId(set.getInt("customer_id"));
+                    bean.setUserId(set.getInt("user_id"));
                     bean.setName(set.getString("name"));
                     bean.setFromGodownId(set.getInt("from_godown_id"));
                     bean.setToGodownId(set.getInt("to_godown_id"));
@@ -2332,6 +2398,8 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
                     bean.setOtherExpence(set.getFloat("other_expence"));
                     bean.setDiscount(set.getFloat("discount"));
                     bean.setTotalAmount(set.getFloat("total_amount"));
+                    bean.setReceivableAmount(set.getFloat("receivable_amount"));
+                    bean.setPendingAmount(set.getFloat("pending_amount"));
                     bean.setHasBillInHand(set.getBoolean("has_bill_in_hand"));
                     bean.setStatus(set.getString("status"));
                     bean.setReferenceBillNo(set.getString("reference_bill_no"));
@@ -2364,6 +2432,7 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
                     bean.setTransectionId(set.getInt("transection_id"));
                     bean.setTransDate(set.getTimestamp("trans_date"));
                     bean.setCustomerId(set.getInt("customer_id"));
+                    bean.setUserId(set.getInt("user_id"));
                     bean.setName(set.getString("name"));
                     bean.setFromGodownId(set.getInt("from_godown_id"));
                     bean.setToGodownId(set.getInt("to_godown_id"));
@@ -2373,6 +2442,8 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
                     bean.setOtherExpence(set.getFloat("other_expence"));
                     bean.setDiscount(set.getFloat("discount"));
                     bean.setTotalAmount(set.getFloat("total_amount"));
+                    bean.setReceivableAmount(set.getFloat("receivable_amount"));
+                    bean.setPendingAmount(set.getFloat("pending_amount"));
                     bean.setHasBillInHand(set.getBoolean("has_bill_in_hand"));
                     bean.setStatus(set.getString("status"));
                     bean.setReferenceBillNo(set.getString("reference_bill_no"));
@@ -2394,7 +2465,9 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
     ////////////////********************* INSERT BILL AND GET GENERATED ID
     ///*** SALE FORM, ADD STOCK, RETURN SALE FORM, RETURN STOCK FORM
     public Integer insertTransectionBillGetId(TransectionBean bean)throws SQLException, RemoteException{
-        String query = "insert into transection(trans_date, customer_id, name, voucher_type, payment_type, packing_expence, other_expence, discount, total_amount, has_bill_in_hand, status, reference_bill_no, transport_name, remarks, confirmed_by) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        String query = "insert into transection(trans_date, customer_id, user_id, name, voucher_type, payment_type, packing_expence, " +
+                "other_expence, discount, total_amount, receivable_amount, pending_amount, has_bill_in_hand, status, reference_bill_no, " +
+                "transport_name, remarks, confirmed_by) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         System.out.println(query);
         PreparedStatement stmt = null;
         ResultSet set = null;
@@ -2404,26 +2477,27 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
             stmt = Home.con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.setTimestamp(1, bean.getTransDate());
             stmt.setInt(2, bean.getCustomerId());
-            stmt.setString(3, bean.getName());
-            stmt.setString(4, bean.getVoucherType());
-            stmt.setString(5, bean.getPaymentType());
-            stmt.setFloat(6, bean.getPackingExpence());
-            stmt.setFloat(7, bean.getOtherExpence());
-            stmt.setFloat(8, bean.getDiscount());
-            stmt.setFloat(9, bean.getTotalAmount());
-            stmt.setBoolean(10, bean.getHasBillInHand());
-            stmt.setString(11, bean.getStatus());
-            stmt.setString(12, bean.getReferenceBillNo());
-            stmt.setString(13, bean.getTransportName());
-            stmt.setString(14, bean.getRemarks());
-            stmt.setString(15, bean.getConfirmedBy());
+            stmt.setInt(3, bean.getUserId());
+            stmt.setString(4, bean.getName());
+            stmt.setString(5, bean.getVoucherType());
+            stmt.setString(6, bean.getPaymentType());
+            stmt.setFloat(7, bean.getPackingExpence());
+            stmt.setFloat(8, bean.getOtherExpence());
+            stmt.setFloat(9, bean.getDiscount());
+            stmt.setFloat(10, bean.getTotalAmount());
+            stmt.setFloat(11, bean.getReceivableAmount());
+            stmt.setFloat(12, bean.getPendingAmount());
+            stmt.setBoolean(13, bean.getHasBillInHand());
+            stmt.setString(14, bean.getStatus());
+            stmt.setString(15, bean.getReferenceBillNo());
+            stmt.setString(16, bean.getTransportName());
+            stmt.setString(17, bean.getRemarks());
+            stmt.setString(18, bean.getConfirmedBy());
             stmt.executeUpdate();
 
             set = stmt.getGeneratedKeys();
             if(set != null)
-                if(set.next())
-                    id = set.getInt(1);
-
+                if(set.next()) id = set.getInt(1);
             return id;
         }
         finally{
@@ -2436,7 +2510,7 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
 
     ////////////////********************* INSERT RECEIPT AND GET GENERATED ID
     public Integer insertTransectionReceiptGetId(TransectionBean bean)throws SQLException, RemoteException{
-        String query = "insert into transection(trans_date, customer_id, voucher_type, payment_type, status, total_amount, remarks, confirmed_by) values(?,?,?,?,?,?,?,?)";
+        String query = "insert into transection(trans_date, customer_id, user_id, voucher_type, payment_type, status, total_amount, remarks, confirmed_by) values(?,?,?,?,?,?,?,?,?)";
         System.out.println(query);
         PreparedStatement stmt = null;
         ResultSet set = null;
@@ -2446,19 +2520,18 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
             stmt = Home.con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.setTimestamp(1, bean.getTransDate());
             stmt.setInt(2, bean.getCustomerId());
-            stmt.setString(3, bean.getVoucherType());
-            stmt.setString(4, bean.getPaymentType());
-            stmt.setString(5, bean.getStatus());
-            stmt.setFloat(6, bean.getTotalAmount());
-            stmt.setString(7, bean.getRemarks());
-            stmt.setString(8, bean.getConfirmedBy());
+            stmt.setInt(3, bean.getUserId());
+            stmt.setString(4, bean.getVoucherType());
+            stmt.setString(5, bean.getPaymentType());
+            stmt.setString(6, bean.getStatus());
+            stmt.setFloat(7, bean.getTotalAmount());
+            stmt.setString(8, bean.getRemarks());
+            stmt.setString(9, bean.getConfirmedBy());
             stmt.executeUpdate();
 
             set = stmt.getGeneratedKeys();
             if(set != null)
-                if(set.next())
-                    id = set.getInt(1);
-
+                if(set.next()) id = set.getInt(1);
             return id;
         }
         finally{
@@ -2470,7 +2543,7 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
 
     ////////////////********************* INSERT DEAD STOCK AND GET GENERATED ID
     public Integer insertTransectionDeadStockGetId(TransectionBean bean)throws SQLException, RemoteException{
-        String query = "insert into transection(trans_date, voucher_type, status, total_amount, remarks, confirmed_by) values(?,?,?,?,?,?)";
+        String query = "insert into transection(trans_date, voucher_type, user_id, status, total_amount, remarks, confirmed_by) values(?,?,?,?,?,?,?)";
         System.out.println(query);
         PreparedStatement stmt = null;
         ResultSet set = null;
@@ -2480,10 +2553,11 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
             stmt = Home.con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.setTimestamp(1, bean.getTransDate());
             stmt.setString(2, bean.getVoucherType());
-            stmt.setString(3, bean.getStatus());
-            stmt.setFloat(4, bean.getTotalAmount());
-            stmt.setString(5, bean.getRemarks());
-            stmt.setString(6, bean.getConfirmedBy());
+            stmt.setInt(3, bean.getUserId());
+            stmt.setString(4, bean.getStatus());
+            stmt.setFloat(5, bean.getTotalAmount());
+            stmt.setString(6, bean.getRemarks());
+            stmt.setString(7, bean.getConfirmedBy());
             stmt.executeUpdate();
 
             set = stmt.getGeneratedKeys();
@@ -2502,7 +2576,7 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
 
     ////////////////********************* INSERT GODOWN TO GODOWN AND GET GENERATED ID
     public Integer insertTransectionGodownToGodownAndGetId(TransectionBean bean)throws SQLException, RemoteException{
-        String query = "insert into transection(trans_date, from_godown_id, to_godown_id, voucher_type, status, transport_name, total_amount, remarks, confirmed_by) values(?,?,?,?,?,?,?,?,?)";
+        String query = "insert into transection(trans_date, from_godown_id, to_godown_id, voucher_type, user_id, status, transport_name, total_amount, remarks, confirmed_by) values(?,?,?,?,?,?,?,?,?,?)";
         System.out.println(query);
         PreparedStatement stmt = null;
         ResultSet set = null;
@@ -2514,11 +2588,12 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
             stmt.setInt(2, bean.getFromGodownId());
             stmt.setInt(3, bean.getToGodownId());
             stmt.setString(4, bean.getVoucherType());
-            stmt.setString(5, bean.getStatus());
-            stmt.setString(6, bean.getTransportName());
-            stmt.setFloat(7, bean.getTotalAmount());
-            stmt.setString(8, bean.getRemarks());
-            stmt.setString(9, bean.getConfirmedBy());
+            stmt.setInt(5, bean.getUserId());
+            stmt.setString(6, bean.getStatus());
+            stmt.setString(7, bean.getTransportName());
+            stmt.setFloat(8, bean.getTotalAmount());
+            stmt.setString(9, bean.getRemarks());
+            stmt.setString(10, bean.getConfirmedBy());
             stmt.executeUpdate();
 
             set = stmt.getGeneratedKeys();
@@ -2535,7 +2610,7 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
 
     ////////////////********************* INSERT GODOWN IN AND GET GENERATED ID
     public Integer insertTransectionGodownInAndGetId(TransectionBean bean)throws SQLException, RemoteException{
-        String query = "insert into transection(trans_date, from_godown_id, voucher_type, status, reference_bill_no, total_amount) values(?,?,?,?,?,?)";
+        String query = "insert into transection(trans_date, from_godown_id, voucher_type, user_id, status, reference_bill_no, total_amount) values(?,?,?,?,?,?,?)";
         System.out.println(query);
         PreparedStatement stmt = null;
         ResultSet set = null;
@@ -2546,16 +2621,15 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
             stmt.setTimestamp(1, bean.getTransDate());
             stmt.setInt(2, bean.getFromGodownId());
             stmt.setString(3, bean.getVoucherType());
-            stmt.setString(4, bean.getStatus());
-            stmt.setString(5, bean.getReferenceBillNo());
-            stmt.setFloat(6, bean.getTotalAmount());
+            stmt.setInt(4, bean.getUserId());
+            stmt.setString(5, bean.getStatus());
+            stmt.setString(6, bean.getReferenceBillNo());
+            stmt.setFloat(7, bean.getTotalAmount());
             stmt.executeUpdate();
 
             set = stmt.getGeneratedKeys();
             if(set != null)
-                if(set.next())
-                    id = set.getInt(1);
-
+                if(set.next()) id = set.getInt(1);
             return id;
         }
         finally{
@@ -2607,8 +2681,8 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
     ////////////////********************* UPDATE TRANSECTION STOCK
 
     ////////////////********************* UPDATE TRANSECTION SALE
-    public Integer updateTransectionSale(Integer transectionId, String name, Float packingExpence, Float otherExpence, Float dicount, Float totalAmount)throws SQLException, RemoteException{
-        String query = "update transection set name = ?, packing_expence = ?, other_expence = ?, discount = ?, total_amount = ? where transection_id = ?";
+    public Integer updateTransectionSale(Integer transectionId, String name, Float packingExpence, Float otherExpence, Float dicount, Float totalAmount, Float receivableAmount, Float pendingAmount, String status, String remarks)throws SQLException, RemoteException{
+        String query = "update transection set name = ?, packing_expence = ?, other_expence = ?, discount = ?, total_amount = ?, receivable_amount = ?, pending_amount = ?, status = ?, remarks = ? where transection_id = ?";
         System.out.println(query);
         PreparedStatement stmt = null;
 
@@ -2619,7 +2693,11 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
             stmt.setFloat(3, otherExpence);
             stmt.setFloat(4, dicount);
             stmt.setFloat(5, totalAmount);
-            stmt.setInt(6, transectionId);
+            stmt.setFloat(6, receivableAmount);
+            stmt.setFloat(7, pendingAmount);
+            stmt.setString(8, status);
+            stmt.setString(9, remarks);
+            stmt.setInt(10, transectionId);
             return stmt.executeUpdate();
         }
         finally{
@@ -2815,6 +2893,166 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
         return getTransection_GeneralMethod(stmt);
     }
     ////////////////********************* GET TRANSECTION RECEIPT BY STATUS & PAYMENT TYPE & CUSTOMER ID
+
+    ////////////////********************* GET FULL TRANSECTION INQUIRY
+    public ArrayList getFullTransectionInquiry(TransectionBean bean) throws SQLException, RemoteException{
+        String query = "SELECT * FROM `transection` WHERE ";
+
+        Integer querySize = query.length();
+        Byte counter = 0;
+
+        /////***** TRANSECTION ID
+        if(bean.getTransectionId() != 0){
+            if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
+            query += "`transection_id` = ? ";
+        }
+
+        /////***** TRANS DATE
+        if(bean.getTransDate() != null){
+            if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
+            query += "`trans_date` >= ? AND `trans_date` <= ? ";     //** TRANS DATE >= '2020-03-10 00:00:00' AND TRANS DATE <= '2020-03-10 23:59:59'
+        }
+
+        /////***** CUSTOMER ID
+        if(bean.getCustomerId() != 0){
+            if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
+            query += "`customer_id` = ? ";
+        }
+
+        /////***** USER ID
+        if(bean.getUserId() != 0){
+            if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
+            query += "`user_id` = ? ";
+        }
+
+        /////***** NAME
+        if(!bean.getName().equals("")){
+            if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
+            query += "`name` = ? ";
+        }
+
+        /////***** FROM GODOWN ID
+        if(bean.getFromGodownId() != 0){
+            if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
+            query += "`from_godown_id` = ? ";
+        }
+
+        /////***** TO GODOWN ID
+        if(bean.getToGodownId() != 0){
+            if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
+            query += "`to_godown_id` = ? ";
+        }
+
+        /////***** VOUCHER TYPE
+        if(!bean.getVoucherType().equals("")){
+            if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
+           query += "`voucher_type` LIKE ? ";
+        }
+
+        /////***** PAYMENT TYPE
+        if(!bean.getPaymentType().equals("")){
+            if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
+            query += "`payment_type` LIKE ? ";
+        }
+
+        /////***** NO BOOLEAN HAS BILL IN HAND (has_bill_in_hand)
+        /////***** NO FLOAT AMOUNTS (packing_expence, other_expence, discount) EXCEPT (total_amount)
+
+        /////***** TOTAL AMOUNT
+        if(bean.getTotalAmount() > 0){
+            if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
+            query += "`total_amount` = ? ";
+        }
+
+        /////***** STATUS
+        if(!bean.getStatus().equals("")){
+            if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
+            query += "`status` LIKE ? ";
+        }
+
+        /////***** REFERENCE BILL NO
+        if(!bean.getReferenceBillNo().equals("")){
+            if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
+            query += "`reference_bill_no` LIKE ? ";
+        }
+
+        /////***** TRANSPORT NAME
+        if(!bean.getTransportName().equals("")){
+            if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
+            query += "`transport_name` LIKE ? ";
+        }
+
+        /////***** REMARKS
+        if(!bean.getRemarks().equals("")){
+            if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
+            query += "`remarks` LIKE ? ";
+        }
+
+        /////***** CONFIRMED BY
+        if(!bean.getConfirmedBy().equals("")){
+            if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
+            query += "`confirmed_by` LIKE ? ";
+        }
+
+        PreparedStatement stmt = Home.con.prepareStatement(query);
+        System.out.println(query);
+
+        /////***** TRASECTION ID
+        if(bean.getTransectionId() != 0) stmt.setInt(++counter, bean.getTransectionId());
+        /////***** TRANS DATE
+        if(bean.getTransDate() != null){
+            stmt.setTimestamp(++counter, bean.getTransDate());
+            stmt.setTimestamp(++counter, Timestamp.valueOf(bean.getTransDate().toLocalDateTime().toLocalDate().atTime(LocalTime.MAX)));
+            System.out.println(bean.getTransDate());
+            System.out.println(Timestamp.valueOf(bean.getTransDate().toLocalDateTime().toLocalDate().atTime(LocalTime.MAX)));
+        }
+        /////***** CUSTOMER ID
+        if(bean.getCustomerId() != 0) stmt.setInt(++counter, bean.getCustomerId());
+
+        /////***** USER ID
+        if(bean.getUserId() != 0) stmt.setInt(++counter, bean.getUserId());
+
+        /////***** NAME
+        if(!bean.getName().equals("")) stmt.setString(++counter, "%"+bean.getName()+"%");
+
+        /////***** FROM GODOWN ID
+        if(bean.getFromGodownId() != 0) stmt.setInt(++counter, bean.getFromGodownId());
+
+        /////***** TO GODOWN ID
+        if(bean.getToGodownId() != 0) stmt.setInt(++counter, bean.getToGodownId());
+
+        /////***** VOUCHER TYPE
+        if(!bean.getVoucherType().equals("")) stmt.setString(++counter, "%"+bean.getVoucherType()+"%");
+
+        /////***** PAYMENT TYPE
+        if(!bean.getPaymentType().equals("")) stmt.setString(++counter, "%"+bean.getPaymentType()+"%");
+
+        /////***** NO BOOLEAN HAS BILL IN HAND (has_bill_in_hand)
+        /////***** NO FLOAT AMOUNTS (packing_expence, other_expence, discount) EXCEPT (total_amount)
+
+        /////***** TOTAL AMOUNT
+        if(bean.getTotalAmount() != 0) stmt.setFloat(++counter, bean.getTotalAmount());
+
+        /////***** STATUS
+        if(!bean.getStatus().equals("")) stmt.setString(++counter, "%"+bean.getStatus()+"%");
+
+        /////***** REFERENCE BILL NO
+        if(!bean.getReferenceBillNo().equals("")) stmt.setString(++counter, "%"+bean.getReferenceBillNo()+"%");
+
+        /////***** TRANSPORT NAME
+        if(!bean.getTransportName().equals("")) stmt.setString(++counter, "%"+bean.getTransportName()+"%");
+
+        /////***** REMARKS
+        if(!bean.getRemarks().equals("")) stmt.setString(++counter, "%"+bean.getRemarks()+"%");
+
+        /////***** CONFIRMED BY
+        if(!bean.getConfirmedBy().equals("")) stmt.setString(++counter, bean.getConfirmedBy()+"%");
+
+        return getTransection_GeneralMethod(stmt);
+    }
+    ////////////////********************* GET FULL TRANSECTION INQUIRY
+
+
 
     ////////////////********************* GET TRANSECTION INQUIRY STOCK
     public ArrayList getTransectionInquiryStock(TransectionBean bean, Boolean hasBill) throws SQLException, RemoteException{
@@ -3118,8 +3356,6 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
     }
     ////////////////********************* GET TRANSECTION INQUIRY
 
-
-
     ////////////////********************* GET TRANSECTION INQUIRY GODOWN
     public ArrayList getTransectionInquiryGodown(TransectionBean bean) throws SQLException, RemoteException{
         String query = "SELECT * FROM `transection` WHERE ";
@@ -3245,6 +3481,64 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
         return getTransection_GeneralMethod(stmt);
     }
     ////////////////********************* GET TRANSECTION BY CUSTOMER ID & PRODUCT ID
+
+
+    ////////////////********************* SINGLE VALUE
+    ////////////////********************* GET SUM TRANSECTION & STATUS TOTAL AMOUNT
+    public Float getSumOfAmountByVoucherTypeAndStatus(Timestamp transDate, String voucherType, String status)throws SQLException, RemoteException{
+        PreparedStatement stmt = null;
+        ResultSet set = null;
+        Float amount = Float.valueOf(0);
+        String query = "SELECT SUM(total_amount) AS 'total_amount' FROM `transection` WHERE ";
+
+        Integer querySize = query.length();
+        Byte counter = 0;
+
+        /////***** TRANS DATE
+        if(transDate != null){
+            if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
+            query += "`trans_date` >= ? AND `trans_date` <= ? ";     //** TRANS DATE >= '2020-03-10 00:00:00' AND TRANS DATE <= '2020-03-10 23:59:59'
+        }
+
+        /////***** VOUCHER TYPE
+        if(!voucherType.equals("")){
+            if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
+            query += "`voucher_type` LIKE ? ";
+        }
+
+        /////***** STATUS
+        if(!status.equals("")){
+            if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
+            query += "`status` LIKE ? ";
+        }
+
+
+        try{
+            stmt = Home.con.prepareStatement(query);
+            System.out.println(query);
+
+            /////***** TRANS DATE
+            if(transDate != null){
+                stmt.setTimestamp(++counter, transDate);
+                stmt.setTimestamp(++counter, Timestamp.valueOf(transDate.toLocalDateTime().toLocalDate().atTime(LocalTime.MAX)));
+            }
+
+            /////***** VOUCHER TYPE
+            if(!voucherType.equals("")) stmt.setString(++counter, voucherType);
+
+            /////***** STATUS
+            if(!status.equals("")) stmt.setString(++counter, status);
+
+            set = stmt.executeQuery();
+            if(set.next()) amount = set.getFloat("total_amount");
+
+            return amount;
+        }
+        finally{
+            if(set != null) set.close();
+            if(stmt != null) stmt.close();
+        }
+    }
 
     ////////////////********************* TRANSECTION METHODS ********************************//////////////////
 

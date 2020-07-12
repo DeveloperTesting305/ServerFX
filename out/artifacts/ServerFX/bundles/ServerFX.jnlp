@@ -8,10 +8,11 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="Commons.jar" size="29448" download="eager" />
-    <jar href="ServerFX.jar" size="52957" download="eager" />
+    <jar href="Commons.jar" size="44293" download="eager" />
+    <jar href="ServerFX.jar" size="66851" download="eager" />
     <jar href="jfoenix-8.0.7.jar" size="2631271" download="eager" />
-    <jar href="mysql-connector-java-5.1.44-bin.jar" size="999635" download="eager" />
+    <jar href="json-simple-1.1.jar" size="16046" download="eager" />
+    <jar href="mysql-connector.jar" size="999635" download="eager" />
   </resources>
   <jfx:javafx-desc  width="600" height="400" main-class="sample.Main"  name="ServerFX" />
   <update check="background"/>

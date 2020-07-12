@@ -40,6 +40,7 @@
                               <items>
                                     <MenuItem mnemonicParsing="false" onAction="#newFile" text="Create New File" />
                                     <MenuItem mnemonicParsing="false" onAction="#closing" text="File Closing" />
+                                    <MenuItem mnemonicParsing="false" onAction="#exportJSONData" text="Export JSON Data" />
                               </items>
                             </Menu>
                           </menus>

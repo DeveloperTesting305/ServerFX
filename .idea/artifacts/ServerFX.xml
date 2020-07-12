@@ -17,8 +17,9 @@
         <element id="module-output" name="ServerFX" />
       </element>
       <element id="library" level="project" name="jfoenix-8.0.7" />
-      <element id="library" level="project" name="mysql-connector-java-5.1.44-bin" />
       <element id="library" level="project" name="Commons" />
+      <element id="library" level="project" name="mysql" />
+      <element id="library" level="project" name="json-simple-1.1" />
     </root>
   </artifact>
 </component>

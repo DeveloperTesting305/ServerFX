@@ -2389,7 +2389,7 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
                     bean.setTransDate(set.getTimestamp("trans_date"));
                     bean.setCustomerId(set.getInt("customer_id"));
                     bean.setUserId(set.getInt("user_id"));
-                    bean.setName(set.getString("name"));
+                    bean.setCustName(set.getString("cust_name"));
                     bean.setFromGodownId(set.getInt("from_godown_id"));
                     bean.setToGodownId(set.getInt("to_godown_id"));
                     bean.setVoucherType(set.getString("voucher_type"));
@@ -2433,7 +2433,7 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
                     bean.setTransDate(set.getTimestamp("trans_date"));
                     bean.setCustomerId(set.getInt("customer_id"));
                     bean.setUserId(set.getInt("user_id"));
-                    bean.setName(set.getString("name"));
+                    bean.setCustName(set.getString("cust_name"));
                     bean.setFromGodownId(set.getInt("from_godown_id"));
                     bean.setToGodownId(set.getInt("to_godown_id"));
                     bean.setVoucherType(set.getString("voucher_type"));
@@ -2465,7 +2465,7 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
     ////////////////********************* INSERT BILL AND GET GENERATED ID
     ///*** SALE FORM, ADD STOCK, RETURN SALE FORM, RETURN STOCK FORM
     public Integer insertTransectionBillGetId(TransectionBean bean)throws SQLException, RemoteException{
-        String query = "insert into transection(trans_date, customer_id, user_id, name, voucher_type, payment_type, packing_expence, " +
+        String query = "insert into transection(trans_date, customer_id, user_id, cust_name, voucher_type, payment_type, packing_expence, " +
                 "other_expence, discount, total_amount, receivable_amount, pending_amount, has_bill_in_hand, status, reference_bill_no, " +
                 "transport_name, remarks, confirmed_by) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         System.out.println(query);
@@ -2478,7 +2478,7 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
             stmt.setTimestamp(1, bean.getTransDate());
             stmt.setInt(2, bean.getCustomerId());
             stmt.setInt(3, bean.getUserId());
-            stmt.setString(4, bean.getName());
+            stmt.setString(4, bean.getCustName());
             stmt.setString(5, bean.getVoucherType());
             stmt.setString(6, bean.getPaymentType());
             stmt.setFloat(7, bean.getPackingExpence());
@@ -2506,7 +2506,6 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
         }
     }
     ////////////////********************* INSERT BILL AND GET GENERATED ID
-
 
     ////////////////********************* INSERT RECEIPT AND GET GENERATED ID
     public Integer insertTransectionReceiptGetId(TransectionBean bean)throws SQLException, RemoteException{
@@ -2640,6 +2639,47 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
     ////////////////********************* INSERT GODOWN IN AND GET GENERATED ID
 
 
+
+    ////////////////********************* UPDATE TRANSECTION BY ID
+    ///*** SALE FORM, ADD STOCK, RETURN SALE FORM, RETURN STOCK FORM
+    public Integer updateTransectionBillById(TransectionBean bean)throws SQLException, RemoteException{
+        String query = "update transection set trans_date = ?, customer_id = ?, user_id = ?, cust_name = ?, voucher_type = ?, " +
+                "payment_type = ?, packing_expence = ?, other_expence = ?, discount = ?, total_amount = ?, receivable_amount = ?, " +
+                "pending_amount = ?, has_bill_in_hand = ?, status = ?, reference_bill_no = ?, transport_name = ?, remarks = ?, " +
+                "confirmed_by = ? where transection_id = ?";
+        System.out.println(query);
+        PreparedStatement stmt = null;
+        ResultSet set = null;
+        try{
+            stmt = Home.con.prepareStatement(query);
+            stmt.setTimestamp(1, bean.getTransDate());
+            stmt.setInt(2, bean.getCustomerId());
+            stmt.setInt(3, bean.getUserId());
+            stmt.setString(4, bean.getCustName());
+            stmt.setString(5, bean.getVoucherType());
+            stmt.setString(6, bean.getPaymentType());
+            stmt.setFloat(7, bean.getPackingExpence());
+            stmt.setFloat(8, bean.getOtherExpence());
+            stmt.setFloat(9, bean.getDiscount());
+            stmt.setFloat(10, bean.getTotalAmount());
+            stmt.setFloat(11, bean.getReceivableAmount());
+            stmt.setFloat(12, bean.getPendingAmount());
+            stmt.setBoolean(13, bean.getHasBillInHand());
+            stmt.setString(14, bean.getStatus());
+            stmt.setString(15, bean.getReferenceBillNo());
+            stmt.setString(16, bean.getTransportName());
+            stmt.setString(17, bean.getRemarks());
+            stmt.setString(18, bean.getConfirmedBy());
+            stmt.setInt(19, bean.getTransectionId());
+            return stmt.executeUpdate();
+        }
+        finally{
+            if(stmt != null) stmt.close();
+            if(set != null) set.close();
+        }
+    }
+    ////////////////********************* UPDATE TRANSECTION BY ID
+
     ////////////////********************* UPDATE RECEIPT
     public Integer updateTransectionReceipt(Integer transectionId, String status, String remarks)throws SQLException, RemoteException{
         String query = "update transection set status = ?, remarks = ? where transection_id = ?";
@@ -2681,14 +2721,14 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
     ////////////////********************* UPDATE TRANSECTION STOCK
 
     ////////////////********************* UPDATE TRANSECTION SALE
-    public Integer updateTransectionSale(Integer transectionId, String name, Float packingExpence, Float otherExpence, Float dicount, Float totalAmount, Float receivableAmount, Float pendingAmount, String status, String remarks)throws SQLException, RemoteException{
-        String query = "update transection set name = ?, packing_expence = ?, other_expence = ?, discount = ?, total_amount = ?, receivable_amount = ?, pending_amount = ?, status = ?, remarks = ? where transection_id = ?";
+    public Integer updateTransectionSale(Integer transectionId, String custName, Float packingExpence, Float otherExpence, Float dicount, Float totalAmount, Float receivableAmount, Float pendingAmount, String status, String remarks)throws SQLException, RemoteException{
+        String query = "update transection set cust_name = ?, packing_expence = ?, other_expence = ?, discount = ?, total_amount = ?, receivable_amount = ?, pending_amount = ?, status = ?, remarks = ? where transection_id = ?";
         System.out.println(query);
         PreparedStatement stmt = null;
 
         try{
             stmt = Home.con.prepareStatement(query);
-            stmt.setString(1, name);
+            stmt.setString(1, custName);
             stmt.setFloat(2, packingExpence);
             stmt.setFloat(3, otherExpence);
             stmt.setFloat(4, dicount);
@@ -2894,9 +2934,12 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
     }
     ////////////////********************* GET TRANSECTION RECEIPT BY STATUS & PAYMENT TYPE & CUSTOMER ID
 
+
     ////////////////********************* GET FULL TRANSECTION INQUIRY
     public ArrayList getFullTransectionInquiry(TransectionBean bean) throws SQLException, RemoteException{
-        String query = "SELECT * FROM `transection` WHERE ";
+        String query = "SELECT * FROM `transection` ";
+
+        if(!bean.isEmpty()) query+="WHERE ";
 
         Integer querySize = query.length();
         Byte counter = 0;
@@ -2926,9 +2969,9 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
         }
 
         /////***** NAME
-        if(!bean.getName().equals("")){
+        if(!bean.getCustName().equals("")){
             if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
-            query += "`name` = ? ";
+            query += "`cust_name` = ? ";
         }
 
         /////***** FROM GODOWN ID
@@ -3013,7 +3056,7 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
         if(bean.getUserId() != 0) stmt.setInt(++counter, bean.getUserId());
 
         /////***** NAME
-        if(!bean.getName().equals("")) stmt.setString(++counter, "%"+bean.getName()+"%");
+        if(!bean.getCustName().equals("")) stmt.setString(++counter, "%"+bean.getCustName()+"%");
 
         /////***** FROM GODOWN ID
         if(bean.getFromGodownId() != 0) stmt.setInt(++counter, bean.getFromGodownId());
@@ -3186,9 +3229,9 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
         }
 
         /////***** NAME
-        else if(!bean.getName().equals("")){
+        else if(!bean.getCustName().equals("")){
             if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
-            query += "`transection`.`name` LIKE ? ";
+            query += "`transection`.`cust_name` LIKE ? ";
         }
 
         /////***** TRANSPORT NAME
@@ -3259,7 +3302,7 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
             System.out.println(Timestamp.valueOf(bean.getTransDate().toLocalDateTime().toLocalDate().atTime(LocalTime.MAX)));
         }
         /////***** NAME
-        else if(!bean.getName().equals("")) stmt.setString(++counter, bean.getName()+"%");
+        else if(!bean.getCustName().equals("")) stmt.setString(++counter, bean.getCustName()+"%");
         /////***** TRANSPORT NAME
         else if(!bean.getTransportName().equals("")) stmt.setString(++counter, bean.getTransportName()+"%");
         /////***** PAYMENT TYPE
@@ -3485,11 +3528,13 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
 
     ////////////////********************* SINGLE VALUE
     ////////////////********************* GET SUM TRANSECTION & STATUS TOTAL AMOUNT
-    public Float getSumOfAmountByVoucherTypeAndStatus(Timestamp transDate, String voucherType, String status)throws SQLException, RemoteException{
+    public Float getSumOfAmountByVoucherTypeAndStatus(Timestamp transDate, Integer customerId, String voucherType, String status)throws SQLException, RemoteException{
         PreparedStatement stmt = null;
         ResultSet set = null;
         Float amount = Float.valueOf(0);
-        String query = "SELECT SUM(total_amount) AS 'total_amount' FROM `transection` WHERE ";
+        String query = "SELECT SUM(total_amount) AS 'total_amount' FROM `transection` ";
+
+        if(transDate != null | customerId != 0 | !voucherType.equals("") | !status.equals("")) query+="WHERE ";
 
         Integer querySize = query.length();
         Byte counter = 0;
@@ -3500,10 +3545,18 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
             query += "`trans_date` >= ? AND `trans_date` <= ? ";     //** TRANS DATE >= '2020-03-10 00:00:00' AND TRANS DATE <= '2020-03-10 23:59:59'
         }
 
+        /////***** CUSTOMER ID
+        if(customerId != 0){
+            if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
+            query += "`customer_id` = ? ";
+            System.out.println("Customer ID : "+customerId);
+        }
+
         /////***** VOUCHER TYPE
         if(!voucherType.equals("")){
             if(querySize != query.length()){ query += "AND "; querySize = query.length(); }
             query += "`voucher_type` LIKE ? ";
+            System.out.println("Voucher Type : "+voucherType);
         }
 
         /////***** STATUS
@@ -3523,12 +3576,16 @@ public class DatabaseImpt extends UnicastRemoteObject implements DatabaseInterfa
                 stmt.setTimestamp(++counter, Timestamp.valueOf(transDate.toLocalDateTime().toLocalDate().atTime(LocalTime.MAX)));
             }
 
+            /////***** CUSTOMER ID
+            if(customerId != 0) stmt.setInt(++counter, customerId);
+
             /////***** VOUCHER TYPE
             if(!voucherType.equals("")) stmt.setString(++counter, voucherType);
 
             /////***** STATUS
             if(!status.equals("")) stmt.setString(++counter, status);
 
+            //** UPDATE
             set = stmt.executeQuery();
             if(set.next()) amount = set.getFloat("total_amount");
 

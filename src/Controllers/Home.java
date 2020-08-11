@@ -61,6 +61,7 @@ public class Home implements Initializable {
         }catch(Exception ee){
             JOptionPane.showMessageDialog(null, "Somethimg Wrong!"+ee.getMessage());
             TAstatus.appendText("\n"+ee.getMessage());
+            ee.printStackTrace();
         }
     }
 
